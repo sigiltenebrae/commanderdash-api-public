@@ -8,7 +8,7 @@ const pool = new Pool({
 })
 
 const getDecks = (request, response) => {
-    pool.query('SELECT * FROM decks ORDER BY id ASC', (error, results) => {
+    pool.query('SELECT id, friendly_name, commander, url, build_rating, play_rating, win_rating, active FROM decks ORDER BY id ASC', (error, results) => {
         if (error) {
             throw error
         }
@@ -19,7 +19,7 @@ const getDecks = (request, response) => {
 const getDeckById = (request, response) => {
     const id = parseInt(request.params.id)
 
-    pool.query('SELECT * FROM decks WHERE id = $1', [id], (error, results) => {
+    pool.query('SELECT id, friendly_name, commander, url, build_rating, play_rating, win_rating, active FROM decks WHERE id = $1', [id], (error, results) => {
         if (error) {
             throw error
         }
@@ -28,10 +28,10 @@ const getDeckById = (request, response) => {
 }
 
 const createDeck = (request, response) => {
-    const { friendly_name, commander, url, build_rating, play_rating, win_rating } = request.body
+    const { friendly_name, commander, url, build_rating, play_rating, win_rating, active } = request.body
 
-    pool.query('INSERT INTO decks (friendly_name, commander, url, build_rating, play_rating, win_rating) ' +
-        'VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [friendly_name, commander, url, build_rating, play_rating, win_rating], (error, results) => {
+    pool.query('INSERT INTO decks (friendly_name, commander, url, build_rating, play_rating, win_rating, active) ' +
+        'VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [friendly_name, commander, url, build_rating, play_rating, win_rating, active], (error, results) => {
         if (error) {
             throw error
         }
@@ -43,11 +43,11 @@ const updateDeck = (request, response) => {
     const id = parseInt(request.params.id)
     console.log(request.body);
     if (request.body && request.body !== {}) {
-        const { bad_id, friendly_name, commander, url, build_rating, play_rating, win_rating } = request.body
+        const { bad_id, friendly_name, commander, url, build_rating, play_rating, win_rating, active } = request.body
 
         pool.query(
-            'UPDATE decks SET friendly_name = $1, commander = $2, url = $3, build_rating = $4, play_rating = $5, win_rating = $6 WHERE id = $7',
-            [friendly_name, commander, url, build_rating, play_rating, win_rating, id],
+            'UPDATE decks SET friendly_name = $1, commander = $2, url = $3, build_rating = $4, play_rating = $5, win_rating = $6, active=$7 WHERE id = $8',
+            [friendly_name, commander, url, build_rating, play_rating, win_rating, active, id],
             (error, results) => {
                 if (error) {
                     console.log(error);
