@@ -8,7 +8,7 @@ const pool = new Pool({
 })
 
 const getDecks = (request, response) => {
-    pool.query('SELECT id, friendly_name, commander, url, build_rating, play_rating, win_rating, active FROM decks ORDER BY id ASC', (error, results) => {
+    pool.query('SELECT * FROM decks ORDER BY id ASC', (error, results) => {
         if (error) {
             throw error
         }
@@ -19,7 +19,7 @@ const getDecks = (request, response) => {
 const getDeckById = (request, response) => {
     const id = parseInt(request.params.id)
 
-    pool.query('SELECT id, friendly_name, commander, url, build_rating, play_rating, win_rating, active FROM decks WHERE id = $1', [id], (error, results) => {
+    pool.query('SELECT * FROM decks WHERE id = $1', [id], (error, results) => {
         if (error) {
             throw error
         }
@@ -28,7 +28,14 @@ const getDeckById = (request, response) => {
 }
 
 const createDeck = (request, response) => {
-    const { friendly_name, commander, url, build_rating, play_rating, win_rating, active } = request.body
+
+    const friendly_name = request.body.friendly_name;
+    const commander = request.body.commander;
+    const url = request.body.url;
+    const build_rating = request.body.build_rating;
+    const play_rating = request.body.play_rating;
+    const win_rating = request.body.win_rating;
+    const active = request.body.active;
 
     pool.query('INSERT INTO decks (friendly_name, commander, url, build_rating, play_rating, win_rating, active) ' +
         'VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [friendly_name, commander, url, build_rating, play_rating, win_rating, active], (error, results) => {
@@ -43,7 +50,14 @@ const updateDeck = (request, response) => {
     const id = parseInt(request.params.id)
     console.log(request.body);
     if (request.body && request.body !== {}) {
-        const { bad_id, friendly_name, commander, url, build_rating, play_rating, win_rating, active } = request.body
+
+        const friendly_name = request.body.friendly_name;
+        const commander = request.body.commander;
+        const url = request.body.url;
+        const build_rating = request.body.build_rating;
+        const play_rating = request.body.play_rating;
+        const win_rating = request.body.win_rating;
+        const active = request.body.active;
 
         pool.query(
             'UPDATE decks SET friendly_name = $1, commander = $2, url = $3, build_rating = $4, play_rating = $5, win_rating = $6, active=$7 WHERE id = $8',
@@ -72,10 +86,128 @@ const deleteDeck = (request, response) => {
     })
 }
 
+const getThemes = (request, response) => {
+    pool.query('SELECT * FROM themes ORDER BY id ASC', (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    })
+}
+
+const getThemeById = (request, response) => {
+    const id = parseInt(request.params.id)
+
+    pool.query('SELECT * FROM themes WHERE id = $1', [id], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    })
+}
+
+const createTheme = (request, response) => {
+    const name = request.body.name;
+
+    pool.query('INSERT INTO themes (name) ' +
+        'VALUES ($1) RETURNING *', [name], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(201).send(`Theme added with ID: ${results.rows[0].id}`)
+    })
+}
+
+const updateTheme = (request, response) => {
+    const id = parseInt(request.params.id)
+    console.log(request.body);
+    if (request.body && request.body !== {}) {
+        const name = request.body.name;
+
+        pool.query(
+            'UPDATE themes SET name = $1 WHERE id = $2',
+            [name, id],
+            (error, results) => {
+                if (error) {
+                    console.log(error);
+                    throw error
+                }
+                console.log("good");
+                response.status(200).send(`Theme modified with ID: ${id}`)
+            }
+        )
+    }
+}
+
+const deleteTheme = (request, response) => {
+    const id = parseInt(request.params.id)
+
+    pool.query('DELETE FROM themes WHERE id = $1', [id], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).send(`Theme deleted with ID: ${id}`)
+    })
+}
+
+const getDeckThemes = (request, response) => {
+    pool.query('SELECT * FROM DECK_THEMES ORDER BY DECKID, THEMEID ASC', (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    })
+}
+
+const getThemesByDeckId = (request, response) => {
+    const id = parseInt(request.params.id)
+
+    pool.query('SELECT * FROM deck_themes WHERE DECKID = $1', [id], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    })
+}
+
+const addDeckTheme = (request, response) => {
+    const deckid = request.body.deckid;
+    const themeid = request.body.themeid;
+
+    pool.query('INSERT INTO deck_themes (DECKID, THEMEID) ' +
+        'VALUES ($1, $2) RETURNING *', [deckid, themeid], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(201).send(`Theme added to deck`);
+    });
+}
+
+const removeDeckTheme = (request, response) => {
+    const deckid = request.body.deckid;
+    const themeid = request.body.themeid;
+
+    pool.query('DELETE FROM deck_themes WHERE DECKID = $1 AND THEMEID = $2', [deckid, themeid], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).send(`Theme deleted from deck`);
+    });
+}
+
 module.exports = {
     getDecks,
     getDeckById,
     createDeck,
     updateDeck,
     deleteDeck,
+    getThemes,
+    getThemeById,
+    createTheme,
+    updateTheme,
+    deleteTheme,
+    getDeckThemes,
+    getThemesByDeckId,
+    addDeckTheme,
+    removeDeckTheme
 }

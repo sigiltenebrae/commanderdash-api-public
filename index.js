@@ -25,6 +25,18 @@ app.post('/decks', db.createDeck);
 app.put('/decks/:id', db.updateDeck);
 app.delete('/decks/:id', db.deleteDeck);
 
+app.get('/themes', db.getThemes);
+app.get('/themes/:id', db.getThemeById);
+app.post('/themes', db.createTheme);
+app.put('/themes/:id', db.updateTheme);
+app.delete('/themes/:id', db.deleteTheme);
+
+app.get('/deckthemes', db.getDeckThemes);
+app.get('/deckthemes/:id', db.getThemesByDeckId);
+app.post('/deckthemes', db.addDeckTheme);
+app.delete('/deckthemes/:id', db.removeDeckTheme);
+
+
 app.listen(port, () => {
     console.log(`App running on port ${port}.`)
 });
