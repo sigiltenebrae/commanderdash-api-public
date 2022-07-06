@@ -33,6 +33,7 @@ app.delete('/themes/:id', db.deleteTheme);
 
 app.get('/deckthemes', db.getDeckThemes);
 app.get('/deckthemes/:id', db.getThemesByDeckId);
+app.get('/deckthemesname/:id', db.getThemeNamesByDeckId);
 app.post('/deckthemes', db.addDeckTheme);
 app.delete('/deckthemes/:id', db.removeDeckTheme);
 

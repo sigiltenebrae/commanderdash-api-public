@@ -170,6 +170,17 @@ const getThemesByDeckId = (request, response) => {
     })
 }
 
+const getThemeNamesByDeckId = (request, response) => {
+    const id = parseInt(request.params.id)
+
+    pool.query('SELECT THEMES.id, NAME FROM THEMES LEFT JOIN DECK_THEMES ON THEMES.id = deck_themes.themeid WHERE deckid = $1 ORDER BY THEMES.id ASC;', [id], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    })
+}
+
 const addDeckTheme = (request, response) => {
     const deckid = request.body.deckid;
     const themeid = request.body.themeid;
@@ -208,6 +219,7 @@ module.exports = {
     deleteTheme,
     getDeckThemes,
     getThemesByDeckId,
+    getThemeNamesByDeckId,
     addDeckTheme,
     removeDeckTheme
 }
