@@ -58,6 +58,8 @@ const updateDeck = (request, response) => {
         const play_rating = request.body.play_rating;
         const win_rating = request.body.win_rating;
         const active = request.body.active;
+        const deleteThemes = request.body.deleteThemes;
+        const themes = request.body.themes;
 
         pool.query(
             'UPDATE decks SET friendly_name = $1, commander = $2, url = $3, build_rating = $4, play_rating = $5, win_rating = $6, active=$7 WHERE id = $8',
@@ -65,12 +67,30 @@ const updateDeck = (request, response) => {
             (error, results) => {
                 if (error) {
                     console.log(error);
-                    throw error
                 }
-                console.log("good");
-                response.status(200).send(`Deck modified with ID: ${id}`)
-            }
-        )
+            });
+        for (let theme of deleteThemes) {
+            console.log('Deleting theme ' + theme.id + ' from deck ' + id);
+            pool.query(
+                'DELETE FROM DECK_THEMES WHERE DECKID = $1 AND THEMEID = $2', [id, theme.id],
+                (error, results) => {
+                    if (error) {
+                        throw error
+                    }
+                }
+            );
+        }
+        for (let theme of themes) {
+            pool.query('INSERT INTO deck_themes (DECKID, THEMEID) ' +
+                'VALUES ($1, $2) RETURNING *', [id, theme.id], (error, results) => {
+                if (error) {
+                    if (error.code !== '23505') {
+                        console.log(error);
+                    }
+                }
+            });
+        }
+        response.status(200).send(`Deck modified with ID: ${id}`)
     }
 
 }
@@ -173,7 +193,7 @@ const getThemesByDeckId = (request, response) => {
 const getThemeNamesByDeckId = (request, response) => {
     const id = parseInt(request.params.id)
 
-    pool.query('SELECT THEMES.id, NAME FROM THEMES LEFT JOIN DECK_THEMES ON THEMES.id = deck_themes.themeid WHERE deckid = $1 ORDER BY THEMES.id ASC;', [id], (error, results) => {
+    pool.query('SELECT THEMES.id as ID, NAME FROM THEMES LEFT JOIN DECK_THEMES ON THEMES.id = deck_themes.themeid WHERE deckid = $1 ORDER BY THEMES.id ASC;', [id], (error, results) => {
         if (error) {
             throw error
         }
