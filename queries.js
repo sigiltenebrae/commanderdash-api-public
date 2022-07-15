@@ -23,12 +23,13 @@ const getDeckById = (request, response) => {
         if (error) {
             throw error
         }
-        response.status(200).json(results.rows)
+        response.status(200).json(results.rows[0])
     })
 }
 
 const createDeck = (request, response) => {
 
+    console.log(request.body);
     const friendly_name = request.body.friendly_name;
     const commander = request.body.commander;
     const url = request.body.url;
@@ -36,14 +37,35 @@ const createDeck = (request, response) => {
     const play_rating = request.body.play_rating;
     const win_rating = request.body.win_rating;
     const active = request.body.active;
+    const themes = request.body.themes;
+    const image_url = request.body.image_url;
 
-    pool.query('INSERT INTO decks (friendly_name, commander, url, build_rating, play_rating, win_rating, active) ' +
-        'VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [friendly_name, commander, url, build_rating, play_rating, win_rating, active], (error, results) => {
+    let err = false;
+    let id = -1;
+    pool.query('INSERT INTO decks (friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url) ' +
+        'VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url], (error, results) => {
         if (error) {
-            throw error
+            err = true;
+            console.log(error);
         }
-        response.status(201).send(`Deck added with ID: ${results.rows[0].id}`)
-    })
+        id = results.rows[0].id;
+        if (id > -1) {
+            console.log('yes');
+            if (themes && themes.length > 0) {
+                for (let theme of themes) {
+                    pool.query('INSERT INTO deck_themes (DECKID, THEMEID) ' +
+                        'VALUES ($1, $2) RETURNING *', [id, theme.id], (error, results) => {
+                        if (error) {
+                            if (error.code !== '23505') {
+                                console.log(error);
+                            }
+                        }
+                    });
+                }
+            }
+            response.status(201).send('Deck added with ID: ' + id);
+        }
+    });
 }
 
 const updateDeck = (request, response) => {
@@ -60,10 +82,11 @@ const updateDeck = (request, response) => {
         const active = request.body.active;
         const deleteThemes = request.body.deleteThemes;
         const themes = request.body.themes;
+        const image_url = request.body.image_url;
 
         pool.query(
-            'UPDATE decks SET friendly_name = $1, commander = $2, url = $3, build_rating = $4, play_rating = $5, win_rating = $6, active=$7 WHERE id = $8',
-            [friendly_name, commander, url, build_rating, play_rating, win_rating, active, id],
+            'UPDATE decks SET friendly_name = $1, commander = $2, url = $3, build_rating = $4, play_rating = $5, win_rating = $6, active=$7, image_url=$8 WHERE id = $9',
+            [friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url, id],
             (error, results) => {
                 if (error) {
                     console.log(error);
@@ -100,7 +123,7 @@ const deleteDeck = (request, response) => {
 
     pool.query('DELETE FROM decks WHERE id = $1', [id], (error, results) => {
         if (error) {
-            throw error
+            console.log(error);
         }
         response.status(200).send(`Deck deleted with ID: ${id}`)
     })
@@ -132,7 +155,9 @@ const createTheme = (request, response) => {
     pool.query('INSERT INTO themes (name) ' +
         'VALUES ($1) RETURNING *', [name], (error, results) => {
         if (error) {
-            throw error
+            if (error.code !== '23505') {
+                console.log(error);
+            }
         }
         response.status(201).send(`Theme added with ID: ${results.rows[0].id}`)
     })
