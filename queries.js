@@ -10,7 +10,7 @@ const pool = new Pool({
 const getDecks = (request, response) => {
     pool.query('SELECT * FROM decks ORDER BY id ASC', (error, results) => {
         if (error) {
-            throw error
+            console.log(error);
         }
         response.status(200).json(results.rows)
     })
@@ -21,7 +21,7 @@ const getDeckById = (request, response) => {
 
     pool.query('SELECT * FROM decks WHERE id = $1', [id], (error, results) => {
         if (error) {
-            throw error
+            console.log(error);
         }
         response.status(200).json(results.rows[0])
     })
@@ -98,7 +98,7 @@ const updateDeck = (request, response) => {
                 'DELETE FROM DECK_THEMES WHERE DECKID = $1 AND THEMEID = $2', [id, theme.id],
                 (error, results) => {
                     if (error) {
-                        throw error
+                        console.log(error);
                     }
                 }
             );
@@ -132,7 +132,7 @@ const deleteDeck = (request, response) => {
 const getThemes = (request, response) => {
     pool.query('SELECT * FROM themes ORDER BY id ASC', (error, results) => {
         if (error) {
-            throw error
+            console.log(error);
         }
         response.status(200).json(results.rows)
     })
@@ -143,7 +143,7 @@ const getThemeById = (request, response) => {
 
     pool.query('SELECT * FROM themes WHERE id = $1', [id], (error, results) => {
         if (error) {
-            throw error
+            console.log(error);
         }
         response.status(200).json(results.rows)
     })
@@ -175,7 +175,6 @@ const updateTheme = (request, response) => {
             (error, results) => {
                 if (error) {
                     console.log(error);
-                    throw error
                 }
                 console.log("good");
                 response.status(200).send(`Theme modified with ID: ${id}`)
@@ -189,7 +188,7 @@ const deleteTheme = (request, response) => {
 
     pool.query('DELETE FROM themes WHERE id = $1', [id], (error, results) => {
         if (error) {
-            throw error
+            console.log(error);
         }
         response.status(200).send(`Theme deleted with ID: ${id}`)
     })
@@ -198,7 +197,7 @@ const deleteTheme = (request, response) => {
 const getDeckThemes = (request, response) => {
     pool.query('SELECT * FROM DECK_THEMES ORDER BY DECKID, THEMEID ASC', (error, results) => {
         if (error) {
-            throw error
+            console.log(error);
         }
         response.status(200).json(results.rows)
     })
@@ -209,7 +208,7 @@ const getThemesByDeckId = (request, response) => {
 
     pool.query('SELECT * FROM deck_themes WHERE DECKID = $1', [id], (error, results) => {
         if (error) {
-            throw error
+            console.log(error);
         }
         response.status(200).json(results.rows)
     })
@@ -220,7 +219,7 @@ const getThemeNamesByDeckId = (request, response) => {
 
     pool.query('SELECT THEMES.id as ID, NAME FROM THEMES LEFT JOIN DECK_THEMES ON THEMES.id = deck_themes.themeid WHERE deckid = $1 ORDER BY THEMES.id ASC;', [id], (error, results) => {
         if (error) {
-            throw error
+            console.log(error);
         }
         response.status(200).json(results.rows)
     })
@@ -233,7 +232,7 @@ const addDeckTheme = (request, response) => {
     pool.query('INSERT INTO deck_themes (DECKID, THEMEID) ' +
         'VALUES ($1, $2) RETURNING *', [deckid, themeid], (error, results) => {
         if (error) {
-            throw error
+            console.log(error);
         }
         response.status(201).send(`Theme added to deck`);
     });
@@ -245,7 +244,7 @@ const removeDeckTheme = (request, response) => {
 
     pool.query('DELETE FROM deck_themes WHERE DECKID = $1 AND THEMEID = $2', [deckid, themeid], (error, results) => {
         if (error) {
-            throw error
+            console.log(error);
         }
         response.status(200).send(`Theme deleted from deck`);
     });
