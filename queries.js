@@ -28,8 +28,6 @@ const getDeckById = (request, response) => {
 }
 
 const createDeck = (request, response) => {
-
-    console.log(request.body);
     const friendly_name = request.body.friendly_name;
     const commander = request.body.commander;
     const url = request.body.url;
@@ -50,7 +48,6 @@ const createDeck = (request, response) => {
         }
         id = results.rows[0].id;
         if (id > -1) {
-            console.log('yes');
             if (themes && themes.length > 0) {
                 for (let theme of themes) {
                     pool.query('INSERT INTO deck_themes (DECKID, THEMEID) ' +
@@ -69,8 +66,7 @@ const createDeck = (request, response) => {
 }
 
 const updateDeck = (request, response) => {
-    const id = parseInt(request.params.id)
-    console.log(request.body);
+    const id = parseInt(request.params.id);
     if (request.body && request.body !== {}) {
 
         const friendly_name = request.body.friendly_name;
@@ -176,7 +172,6 @@ const updateTheme = (request, response) => {
                 if (error) {
                     console.log(error);
                 }
-                console.log("good");
                 response.status(200).send(`Theme modified with ID: ${id}`)
             }
         )
