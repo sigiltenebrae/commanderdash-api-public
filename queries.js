@@ -1,3 +1,4 @@
+const {response} = require("express");
 const Pool = require('pg').Pool
 const pool = new Pool({
     user: 'tenebris',
@@ -7,8 +8,27 @@ const pool = new Pool({
     port: 5432,
 })
 
+const getUsers = (request, response) => {
+    pool.query('SELECT id, username FROM USERS ORDER BY id ASC', (error, results) => {
+        if (error) {
+            console.log(error);
+        }
+        response.status(200).json(results.rows);
+    })
+}
+
 const getDecks = (request, response) => {
     pool.query('SELECT * FROM decks ORDER BY id ASC', (error, results) => {
+        if (error) {
+            console.log(error);
+        }
+        response.status(200).json(results.rows)
+    })
+}
+
+const getDecksByUser = (request, response) => {
+    const user_id = parseInt(request.params.user_id);
+    pool.query('SELECT * FROM decks WHERE creator = $1', [user_id], (error, results) => {
         if (error) {
             console.log(error);
         }
@@ -20,10 +40,7 @@ const getDeckById = (request, response) => {
     const id = parseInt(request.params.id)
 
     pool.query('SELECT * FROM decks WHERE id = $1', [id], (error, results) => {
-        if (error) {
-            console.log(error);
-        }
-        response.status(200).json(results.rows[0])
+
     })
 }
 
@@ -37,11 +54,12 @@ const createDeck = (request, response) => {
     const active = request.body.active;
     const themes = request.body.themes;
     const image_url = request.body.image_url;
+    const creator = request.body.creator;
 
     let err = false;
     let id = -1;
-    pool.query('INSERT INTO decks (friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url) ' +
-        'VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *', [friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url], (error, results) => {
+    pool.query('INSERT INTO decks (creator, friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url) ' +
+        'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *', [creator, friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url], (error, results) => {
         if (error) {
             err = true;
             console.log(error);
@@ -246,7 +264,9 @@ const removeDeckTheme = (request, response) => {
 }
 
 module.exports = {
+    getUsers,
     getDecks,
+    getDecksByUser,
     getDeckById,
     createDeck,
     updateDeck,

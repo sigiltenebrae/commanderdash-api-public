@@ -19,6 +19,9 @@ app.get('/', (request, response) => {
     response.json({ info: 'Node.js, Express, and Postgres API' })
 });
 
+app.get('/users', db.getUsers);
+app.get('/users/:user_id', db.getDecksByUser);
+
 app.get('/decks', db.getDecks);
 app.get('/decks/:id', db.getDeckById);
 app.post('/decks', db.createDeck);
