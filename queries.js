@@ -48,6 +48,7 @@ const getDeckById = (request, response) => {
 }
 
 const createDeck = (request, response) => {
+    console.log(request.body);
     const friendly_name = request.body.friendly_name;
     const commander = request.body.commander;
     const url = request.body.url;
@@ -58,11 +59,15 @@ const createDeck = (request, response) => {
     const themes = request.body.themes;
     const image_url = request.body.image_url;
     const creator = request.body.creator;
+    const partner_commander = request.body.partner_commander;
+    const partner_image_url = partner_commander ? request.body.partner_image_url : null;
 
     let err = false;
     let id = -1;
-    pool.query('INSERT INTO decks (creator, friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url) ' +
-        'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *', [creator, friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url], (error, results) => {
+    pool.query('INSERT INTO decks (creator, friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url, partner_commander, partner_image_url) ' +
+        'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *',
+        [creator, friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url, partner_commander, partner_image_url],
+        (error, results) => {
         if (error) {
             err = true;
             console.log(error);
@@ -100,10 +105,12 @@ const updateDeck = (request, response) => {
         const deleteThemes = request.body.deleteThemes;
         const themes = request.body.themes;
         const image_url = request.body.image_url;
+        const partner_commander = request.body.partner_commander ? request.body.partner_commander: null;
+        const partner_image_url = partner_commander ? request.body.partner_image_url : null;
 
         pool.query(
-            'UPDATE decks SET friendly_name = $1, commander = $2, url = $3, build_rating = $4, play_rating = $5, win_rating = $6, active=$7, image_url=$8 WHERE id = $9',
-            [friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url, id],
+            'UPDATE decks SET friendly_name = $1, commander = $2, url = $3, build_rating = $4, play_rating = $5, win_rating = $6, active=$7, image_url=$8, partner_commander=$9, partner_image_url=$10 WHERE id = $11',
+            [friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url, partner_commander, partner_image_url, id],
             (error, results) => {
                 if (error) {
                     console.log(error);
