@@ -20,7 +20,7 @@ const getUsers = (request, response) => {
 const getDecks = (request, response) => {
     pool.query('SELECT * FROM decks ORDER BY id ASC', (error, results) => {
         if (error) {
-            console.log(error);
+            console.log("decks:" + error);
         }
         response.status(200).json(results.rows)
     })
@@ -28,12 +28,18 @@ const getDecks = (request, response) => {
 
 const getDecksByUser = (request, response) => {
     const user_id = parseInt(request.params.user_id);
-    pool.query('SELECT * FROM decks WHERE creator = $1', [user_id], (error, results) => {
-        if (error) {
-            console.log(error);
-        }
-        response.status(200).json(results.rows)
-    })
+    if (user_id) {
+        pool.query('SELECT * FROM decks WHERE creator = $1', [user_id], (error, results) => {
+            if (error) {
+                console.log("user_decks: " + error);
+            }
+            response.status(200).json(results.rows)
+        })
+    }
+    else {
+        response.json([]);
+    }
+
 }
 
 const getDeckById = (request, response) => {
