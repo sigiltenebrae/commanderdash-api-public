@@ -37,29 +37,28 @@ app.get('/', (request, response) => {
     response.json({ info: 'API endpoint for CommanderDash' })
 });
 
-app.get('/users', mtgdb.getUsers);
-app.get('/users/:user_id', mtgdb.getDecksByUser);
+app.get('/api/users', mtgdb.getUsers);
+app.get('/api/users/:user_id', mtgdb.getDecksByUser);
 
-app.get('/decks', mtgdb.getDecks);
-app.get('/decks/:id', mtgdb.getDeckById);
-app.post('/decks', mtgdb.createDeck);
-app.put('/decks/:id', mtgdb.updateDeck);
-app.delete('/decks/:id', mtgdb.deleteDeck);
+app.get('/api/decks', mtgdb.getDecks);
+app.get('/api/decks/:id', mtgdb.getDeckById);
+app.post('/api/decks', mtgdb.createDeck);
+app.put('/api/decks/:id', mtgdb.updateDeck);
+app.delete('/api/decks/:id', mtgdb.deleteDeck);
 
-app.get('/themes', mtgdb.getThemes);
-app.get('/themes/:id', mtgdb.getThemeById);
-app.post('/themes', mtgdb.createTheme);
-app.put('/themes/:id', mtgdb.updateTheme);
-app.delete('/themes/:id', mtgdb.deleteTheme);
+app.get('/api/themes', mtgdb.getThemes);
+app.get('/api/themes/:id', mtgdb.getThemeById);
+app.post('/api/themes', mtgdb.createTheme);
+app.put('/api/themes/:id', mtgdb.updateTheme);
+app.delete('/api/themes/:id', mtgdb.deleteTheme);
 
-app.get('/deckthemes', mtgdb.getDeckThemes);
-app.get('/deckthemes/:id', mtgdb.getThemesByDeckId);
-app.get('/deckthemesname/:id', mtgdb.getThemeNamesByDeckId);
-app.post('/deckthemes', mtgdb.addDeckTheme);
-app.delete('/deckthemes/:id', mtgdb.removeDeckTheme);
+app.get('/api/deckthemes', mtgdb.getDeckThemes);
+app.get('/api/deckthemes/:id', mtgdb.getThemesByDeckId);
+app.get('/api/deckthemesname/:id', mtgdb.getThemeNamesByDeckId);
+app.post('/api/deckthemes', mtgdb.addDeckTheme);
+app.delete('/api/deckthemes/:id', mtgdb.removeDeckTheme);
 
 require('./app/routes/auth.routes')(app);
-require('./app/routes/user.routes')(app);
 
 app.listen(port, () => {
     console.log(`App running on port ${port}.`)

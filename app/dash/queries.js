@@ -54,7 +54,6 @@ const getDeckById = (request, response) => {
 }
 
 const createDeck = (request, response) => {
-    console.log(request.body);
     const friendly_name = request.body.friendly_name;
     const commander = request.body.commander;
     const url = request.body.url;
@@ -92,7 +91,7 @@ const createDeck = (request, response) => {
                     });
                 }
             }
-            response.status(201).send('Deck added with ID: ' + id);
+            response.status(201).send({ id:  id });
         }
     });
 }
@@ -143,7 +142,7 @@ const updateDeck = (request, response) => {
                 }
             });
         }
-        response.status(200).send(`Deck modified with ID: ${id}`)
+        response.json({message: `Deck modified with ID: ${id}` });
     }
 
 }
