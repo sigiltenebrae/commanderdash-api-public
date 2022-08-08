@@ -1,7 +1,7 @@
 module.exports = {
     HOST: "192.168.1.15",
-    USER: "tenebris",
-    PASSWORD: "Howaboutthis1!",
+    USER: "mtgadmin",
+    PASSWORD: "pinkfluffyunicorns",
     DB: "mtg-data",
     dialect: "postgres",
     pool: {

@@ -1,10 +1,10 @@
 const {response} = require("express");
 const Pool = require('pg').Pool
 const pool = new Pool({
-    user: 'tenebris',
+    user: 'mtgadmin',
     host: '192.168.1.15',
     database: 'mtg-data',
-    password: 'Howaboutthis1!',
+    password: 'pinkfluffyunicorns',
     port: 5432,
 })
 
