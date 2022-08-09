@@ -112,7 +112,7 @@ const updateDeck = (request, response) => {
         const image_url = request.body.image_url;
         const partner_commander = request.body.partner_commander ? request.body.partner_commander: null;
         const partner_image_url = partner_commander ? request.body.partner_image_url : null;
-
+        console.log(request.body);
         pool.query(
             'UPDATE decks SET friendly_name = $1, commander = $2, url = $3, build_rating = $4, play_rating = $5, win_rating = $6, active=$7, image_url=$8, partner_commander=$9, partner_image_url=$10 WHERE id = $11',
             [friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url, partner_commander, partner_image_url, id],
@@ -154,7 +154,7 @@ const deleteDeck = (request, response) => {
         if (error) {
             console.log(error);
         }
-        response.status(200).send(`Deck deleted with ID: ${id}`)
+        response.json({message: `Deck deleted with ID: ${id}`});
     })
 }
 
