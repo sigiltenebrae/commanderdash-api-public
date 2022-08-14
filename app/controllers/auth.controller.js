@@ -19,7 +19,7 @@ exports.signup = (request, response) => {
         'VALUES ($1, $2) RETURNING *', [username, password],
         (error, results) => {
             if (error) {
-                console.log(error);
+                return response.status(500).send({ message: error.message });
             }
             id = results.rows[0].id;
             if (id > -1) {
@@ -27,10 +27,9 @@ exports.signup = (request, response) => {
                 'VALUES ($1, $2) RETURNING *', [id, 1],
                     (err, res) => {
                         if (err) {
-                            console.log(err);
+                            return response.status(500).send({ message: err.message });
                         }
                     });
-                console.log('success')
                 return response.json({message: `User added with ID: ${results.rows[0].id}`})
             }
         });
@@ -67,4 +66,36 @@ exports.signin = (request, response) => {
             accessToken: token
             });
         });
+}
+
+exports.changepassword = (request, response) => {
+    const id = request.body.id;
+    pool.query('SELECT * FROM users WHERE id = $1', [id], (error, results) => {
+        if (error) {
+            return response.status(500).send({ message: error.message });
+        }
+        if (results.rows.length < 1) {
+            return response.status(404).send({ message: "User Not found." });
+        }
+        const user = results.rows[0];
+        const passwordValid = bcrypt.compareSync(
+            request.body.password,
+            user.password
+        );
+        if (!passwordValid) {
+            return response.status(401).send({
+                accessToken: null,
+                message: "Invalid Password!"
+            });
+        }
+        const new_password = bcrypt.hashSync(request.body.new_password, 8);
+        pool.query('UPDATE users SET password = $1 WHERE id = $2', [new_password, user.id], (error, results) => {
+           if (error) {
+               return response.status(500).send({ message: error.message });
+           }
+
+           return response.json({message: `Password updated for user with ID: ${user.id}` });
+        });
+    });
+
 }

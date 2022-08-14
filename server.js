@@ -24,6 +24,7 @@ app.get('/', (request, response) => {
 });
 app.post('/api/auth/signup', authdb.signup);
 app.post('/api/auth/signin', authdb.signin);
+app.post('/api/auth/change_password', authdb.changepassword);
 
 app.get('/api/users', userdb.getUsers);
 app.get('/api/users/:user_id', mtgdb.getDecksByUser);
