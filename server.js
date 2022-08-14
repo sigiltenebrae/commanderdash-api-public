@@ -27,9 +27,11 @@ app.post('/api/auth/signin', authdb.signin);
 app.post('/api/auth/change_password', authdb.changepassword);
 
 app.get('/api/users', userdb.getUsers);
-app.get('/api/users/:user_id', mtgdb.getDecksByUser);
+app.get('/api/users/theme/:id', userdb.getTheme);
+app.put('/api/users/theme/:id', userdb.setTheme);
 
 app.get('/api/decks', mtgdb.getDecks);
+app.get('/api/decks/byuser/:user_id', mtgdb.getDecksByUser);
 app.get('/api/decks/:id', mtgdb.getDeckById);
 app.post('/api/decks', mtgdb.createDeck);
 app.put('/api/decks/:id', mtgdb.updateDeck);
