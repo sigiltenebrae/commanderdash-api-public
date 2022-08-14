@@ -1,6 +1,8 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const mtgdb = require('./app/dash/queries')
+const express = require('express');
+const bodyParser = require('body-parser');
+const mtgdb = require('./app/controllers/decks.controller');
+const authdb = require('./app/controllers/auth.controller');
+const userdb = require('./app/controllers/user.controller');
 const db = require('./app/models');
 const Role = db.role;
 db.sequelize.sync();
@@ -36,8 +38,10 @@ app.use(
 app.get('/', (request, response) => {
     response.json({ info: 'API endpoint for CommanderDash' })
 });
+app.post('/api/auth/signup', authdb.signup);
+app.post('/api/auth/signin', authdb.signin);
 
-app.get('/api/users', mtgdb.getUsers);
+app.get('/api/users', userdb.getUsers);
 app.get('/api/users/:user_id', mtgdb.getDecksByUser);
 
 app.get('/api/decks', mtgdb.getDecks);
@@ -57,8 +61,6 @@ app.get('/api/deckthemes/:id', mtgdb.getThemesByDeckId);
 app.get('/api/deckthemesname/:id', mtgdb.getThemeNamesByDeckId);
 app.post('/api/deckthemes', mtgdb.addDeckTheme);
 app.delete('/api/deckthemes/:id', mtgdb.removeDeckTheme);
-
-require('./app/routes/auth.routes')(app);
 
 app.listen(port, () => {
     console.log(`App running on port ${port}.`)

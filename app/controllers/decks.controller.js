@@ -1,23 +1,14 @@
-const {response} = require("express");
+const config = require("../config/db.config.js");
 const Pool = require('pg').Pool
 const pool = new Pool({
-    user: 'mtgadmin',
-    host: '192.168.1.15',
-    database: 'mtg-data',
-    password: 'pinkfluffyunicorns',
+    user: config.USER,
+    host: config.HOST,
+    database: config.DB,
+    password: config.PASSWORD,
     port: 5432,
-})
+});
 
-const getUsers = (request, response) => {
-    pool.query('SELECT id, username FROM USERS ORDER BY id ASC', (error, results) => {
-        if (error) {
-            console.log(error);
-        }
-        response.status(200).json(results.rows);
-    })
-}
-
-const getDecks = (request, response) => {
+exports.getDecks = (request, response) => {
     pool.query('SELECT * FROM decks ORDER BY id ASC', (error, results) => {
         if (error) {
             console.log("decks:" + error);
@@ -26,7 +17,7 @@ const getDecks = (request, response) => {
     })
 }
 
-const getDecksByUser = (request, response) => {
+exports.getDecksByUser = (request, response) => {
     const user_id = parseInt(request.params.user_id);
     if (user_id) {
         pool.query('SELECT * FROM decks WHERE creator = $1', [user_id], (error, results) => {
@@ -42,7 +33,7 @@ const getDecksByUser = (request, response) => {
 
 }
 
-const getDeckById = (request, response) => {
+exports.getDeckById = (request, response) => {
     const id = parseInt(request.params.id)
 
     pool.query('SELECT * FROM decks WHERE id = $1', [id], (error, results) => {
@@ -53,7 +44,7 @@ const getDeckById = (request, response) => {
     })
 }
 
-const createDeck = (request, response) => {
+exports.createDeck = (request, response) => {
     const friendly_name = request.body.friendly_name;
     const commander = request.body.commander;
     const url = request.body.url;
@@ -96,7 +87,7 @@ const createDeck = (request, response) => {
     });
 }
 
-const updateDeck = (request, response) => {
+exports.updateDeck = (request, response) => {
     const id = parseInt(request.params.id);
     if (request.body && request.body !== {}) {
 
@@ -147,7 +138,7 @@ const updateDeck = (request, response) => {
 
 }
 
-const deleteDeck = (request, response) => {
+exports.deleteDeck = (request, response) => {
     const id = parseInt(request.params.id)
 
     pool.query('DELETE FROM decks WHERE id = $1', [id], (error, results) => {
@@ -158,7 +149,7 @@ const deleteDeck = (request, response) => {
     })
 }
 
-const getThemes = (request, response) => {
+exports.getThemes = (request, response) => {
     pool.query('SELECT * FROM themes ORDER BY id ASC', (error, results) => {
         if (error) {
             console.log(error);
@@ -167,7 +158,7 @@ const getThemes = (request, response) => {
     })
 }
 
-const getThemeById = (request, response) => {
+exports.getThemeById = (request, response) => {
     const id = parseInt(request.params.id)
 
     pool.query('SELECT * FROM themes WHERE id = $1', [id], (error, results) => {
@@ -178,7 +169,7 @@ const getThemeById = (request, response) => {
     })
 }
 
-const createTheme = (request, response) => {
+exports.createTheme = (request, response) => {
     const name = request.body.name;
 
     pool.query('INSERT INTO themes (name) ' +
@@ -192,7 +183,7 @@ const createTheme = (request, response) => {
     })
 }
 
-const updateTheme = (request, response) => {
+exports.updateTheme = (request, response) => {
     const id = parseInt(request.params.id)
     console.log(request.body);
     if (request.body && request.body !== {}) {
@@ -211,7 +202,7 @@ const updateTheme = (request, response) => {
     }
 }
 
-const deleteTheme = (request, response) => {
+exports.deleteTheme = (request, response) => {
     const id = parseInt(request.params.id)
 
     pool.query('DELETE FROM themes WHERE id = $1', [id], (error, results) => {
@@ -222,7 +213,7 @@ const deleteTheme = (request, response) => {
     })
 }
 
-const getDeckThemes = (request, response) => {
+exports.getDeckThemes = (request, response) => {
     pool.query('SELECT * FROM DECK_THEMES ORDER BY DECKID, THEMEID ASC', (error, results) => {
         if (error) {
             console.log(error);
@@ -231,7 +222,7 @@ const getDeckThemes = (request, response) => {
     })
 }
 
-const getThemesByDeckId = (request, response) => {
+exports.getThemesByDeckId = (request, response) => {
     const id = parseInt(request.params.id)
 
     pool.query('SELECT * FROM deck_themes WHERE DECKID = $1', [id], (error, results) => {
@@ -242,7 +233,7 @@ const getThemesByDeckId = (request, response) => {
     })
 }
 
-const getThemeNamesByDeckId = (request, response) => {
+exports.getThemeNamesByDeckId = (request, response) => {
     const id = parseInt(request.params.id)
 
     pool.query('SELECT THEMES.id as ID, NAME FROM THEMES LEFT JOIN DECK_THEMES ON THEMES.id = deck_themes.themeid WHERE deckid = $1 ORDER BY THEMES.id ASC;', [id], (error, results) => {
@@ -253,7 +244,7 @@ const getThemeNamesByDeckId = (request, response) => {
     })
 }
 
-const addDeckTheme = (request, response) => {
+exports.addDeckTheme = (request, response) => {
     const deckid = request.body.deckid;
     const themeid = request.body.themeid;
 
@@ -266,7 +257,7 @@ const addDeckTheme = (request, response) => {
     });
 }
 
-const removeDeckTheme = (request, response) => {
+exports.removeDeckTheme = (request, response) => {
     const deckid = request.body.deckid;
     const themeid = request.body.themeid;
 
@@ -276,24 +267,4 @@ const removeDeckTheme = (request, response) => {
         }
         response.status(200).send(`Theme deleted from deck`);
     });
-}
-
-module.exports = {
-    getUsers,
-    getDecks,
-    getDecksByUser,
-    getDeckById,
-    createDeck,
-    updateDeck,
-    deleteDeck,
-    getThemes,
-    getThemeById,
-    createTheme,
-    updateTheme,
-    deleteTheme,
-    getDeckThemes,
-    getThemesByDeckId,
-    getThemeNamesByDeckId,
-    addDeckTheme,
-    removeDeckTheme
 }
