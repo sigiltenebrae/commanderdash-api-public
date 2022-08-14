@@ -3,25 +3,9 @@ const bodyParser = require('body-parser');
 const mtgdb = require('./app/controllers/decks.controller');
 const authdb = require('./app/controllers/auth.controller');
 const userdb = require('./app/controllers/user.controller');
-const db = require('./app/models');
-const Role = db.role;
-db.sequelize.sync();
-
-function initial() {
-    Role.create({
-            id: 1,
-            name: "user"
-        });
-    Role.create({
-            id: 2,
-            name: "admin"
-        });
-}
 
 const app = express()
 const port = 3000
-
-
 
 const cors = require('cors');
 app.use(cors({
