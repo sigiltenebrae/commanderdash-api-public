@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mtgdb = require('./app/controllers/decks.controller');
 const authdb = require('./app/controllers/auth.controller');
 const userdb = require('./app/controllers/user.controller');
+const banlistdb = require('./app/controllers/banlist.controller');
 
 const app = express()
 const port = 3000
@@ -29,6 +30,11 @@ app.post('/api/auth/change_password', authdb.changepassword);
 app.get('/api/users', userdb.getUsers);
 app.get('/api/users/theme/:id', userdb.getTheme);
 app.put('/api/users/theme/:id', userdb.setTheme);
+
+app.get('/api/bans/types', banlistdb.getBanTypes);
+app.get('/api/bans', banlistdb.getBans);
+app.post('/api/bans/add', banlistdb.addBan);
+app.post('/api/bans/remove', banlistdb.removeBan);
 
 app.get('/api/decks', mtgdb.getDecks);
 app.get('/api/decks/byuser/:user_id', mtgdb.getDecksByUser);

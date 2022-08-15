@@ -58,13 +58,20 @@ exports.signin = (request, response) => {
         let token = jwt.sign({ id: user.id }, secret_config.secret, {
             expiresIn: 86400 // 24 hours
         });
-        return response.status(200).send({
-            id: user.id,
-            username: user.username,
-            roles: [],
-            theme: user.theme,
-            accessToken: token
+        pool.query('SELECT roles.name from roles left join user_roles on roles.id = user_roles."roleId" where user_roles."userId" = $1',
+            [user.id], (err, res) => {
+                if (err) {
+                    return response.status(500).send({ message: err.message });
+                }
+                return response.status(200).send({
+                    id: user.id,
+                    username: user.username,
+                    roles: res.rows,
+                    theme: user.theme,
+                    accessToken: token
+                });
             });
+
         });
 }
 
