@@ -1,4 +1,4 @@
-const config = require("../config/db.config.js");
+const config = require("../config/tenebris.config.js");
 const Pool = require('pg').Pool
 const pool = new Pool({
     user: config.USER,
