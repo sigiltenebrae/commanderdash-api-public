@@ -1,4 +1,4 @@
-const config = require("../config/db.config.js");
+const config = require("../config/tenebris.config.js");
 const secret_config = require("../config/auth.config")
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
