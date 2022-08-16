@@ -103,9 +103,10 @@ exports.updateDeck = (request, response) => {
         const image_url = request.body.image_url;
         const partner_commander = request.body.partner_commander ? request.body.partner_commander: null;
         const partner_image_url = partner_commander ? request.body.partner_image_url : null;
+        const creator = request.body.creator;
         pool.query(
-            'UPDATE decks SET friendly_name = $1, commander = $2, url = $3, build_rating = $4, play_rating = $5, win_rating = $6, active=$7, image_url=$8, partner_commander=$9, partner_image_url=$10 WHERE id = $11',
-            [friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url, partner_commander, partner_image_url, id],
+            'UPDATE decks SET friendly_name = $1, commander = $2, url = $3, build_rating = $4, play_rating = $5, win_rating = $6, active=$7, image_url=$8, partner_commander=$9, partner_image_url=$10, creator=$11 WHERE id = $12',
+            [friendly_name, commander, url, build_rating, play_rating, win_rating, active, image_url, partner_commander, partner_image_url, creator, id],
             (error, results) => {
                 if (error) {
                     console.log(error);
