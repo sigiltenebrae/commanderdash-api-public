@@ -4,6 +4,7 @@ const mtgdb = require('./app/controllers/decks.controller');
 const authdb = require('./app/controllers/auth.controller');
 const userdb = require('./app/controllers/user.controller');
 const banlistdb = require('./app/controllers/banlist.controller');
+const gamedb = require('./app/controllers/games.controller');
 
 const app = express()
 const port = 3000
@@ -54,6 +55,11 @@ app.get('/api/deckthemes/:id', mtgdb.getThemesByDeckId);
 app.get('/api/deckthemesname/:id', mtgdb.getThemeNamesByDeckId);
 app.post('/api/deckthemes', mtgdb.addDeckTheme);
 app.delete('/api/deckthemes/:id', mtgdb.removeDeckTheme);
+
+app.post('/api/games', gamedb.addGame);
+app.get('/api/games', gamedb.getGames);
+app.get('/api/games/all', gamedb.getGameDecks);
+app.get('/api/games/:id', gamedb.getDecksForGame);
 
 app.listen(port, () => {
     console.log(`App running on port ${port}.`)
