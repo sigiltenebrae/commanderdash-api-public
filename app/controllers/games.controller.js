@@ -58,3 +58,14 @@ exports.getDecksForGame = (request, response) => {
         response.status(200).json(results.rows);
     })
 }
+
+exports.getGamesForDeck = (request, response) => {
+    const id = parseInt(request.params.id)
+
+    pool.query('SELECT * FROM deck_games WHERE "deckId" = $1', [id], (error, results) => {
+        if (error) {
+            console.log(error);
+        }
+        response.status(200).json(results.rows);
+    })
+}

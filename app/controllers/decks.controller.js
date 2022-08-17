@@ -40,7 +40,14 @@ exports.getDeckById = (request, response) => {
         if (error) {
             console.log(error);
         }
-        response.status(200).json(results.rows[0])
+        else {
+            if (results.rows.length > 0) {
+                response.status(200).json(results.rows[0])
+            }
+            else {
+                response.status(200).json({});
+            }
+        }
     })
 }
 

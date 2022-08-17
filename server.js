@@ -60,6 +60,7 @@ app.post('/api/games', gamedb.addGame);
 app.get('/api/games', gamedb.getGames);
 app.get('/api/games/all', gamedb.getGameDecks);
 app.get('/api/games/:id', gamedb.getDecksForGame);
+app.get('/api/games/deck/:id', gamedb.getGamesForDeck);
 
 app.listen(port, () => {
     console.log(`App running on port ${port}.`)
